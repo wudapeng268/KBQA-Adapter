@@ -36,7 +36,7 @@ bash script/run-other.sh $card
 ## Reproduce KBQA result
 
 ### Entity Linking
-We use FocusPrune to annotated the entity, please refer to <https://github.com/wudapeng268/KB-QA-baseline> for detail.
+We use FocusPrune to annotated the entity, please refer to <https://github.com/wudapeng268/KBQA-Baseline> for detail.
 
 
 ### Test for kbqa
