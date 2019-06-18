@@ -1,7 +1,7 @@
 #author:wup
 #description: start file
 #e-mail:wup@nlp.nju.cn
-#date: 2018.4.4
+#date: 
 
 import os
 import tensorflow as tf
@@ -31,14 +31,9 @@ parse.add_argument("--same_tl",action="store_true",help="run same train len")
 parse.add_argument("--star_model",action="store_true",help="run same relation size")
 
 parse.add_argument("--test_raw_model",action="store_true",help="test_raw_model")
-parse.add_argument("--test_wq",type=str,default=None,help="test_raw_model")
-parse.add_argument("--train_wq",action="store_true",help="test_raw_model")
-parse.add_argument("--train_new_wq",action="store_true",help="test_raw_model")
-
 args = parse.parse_args()
 
-if args.train_new_wq:
-    args.train_wq= True
+
 
 tf.logging.info("Use tf")
 from src.network import BiGRU
@@ -119,18 +114,9 @@ key_num = args.key_num
 exp = ""
 
 # create dataset path
-if args.divide_train:
-    exp = "divide_train"
-    config['data']['train_path'] = "/home/user_data/wup/fold-3-train-divide/train-sample-{}.pickle".format(key_num)
-    config['model']['name'] = config['model']['name'] + "-{}-{}".format(fold,key_num)
-elif args.same_rs_new:
-    config['data']['train_path'] = "/home/user_data55/wup/same-rs-new-900-train-divide/train-sample-{}.pickle".format(key_num)
-    config['model']['name'] = config['model']['name'] + "-rs-new-{}".format(key_num)
-elif args.same_tl:
+if args.same_tl:
     config['data']['train_path'] = "/home/user_data/wup/same-tl-60000-train-divide/train-relation-{}.pickle".format(key_num)
     config['model']['name'] = config['model']['name'] + "-tl-{}".format(key_num)
-elif args.train_wq:
-    pass
 else:
     config['model']['name'] = config['model']['name'] + "-{}".format(fold)
     config['data']['train_path'] = "/home/user_data/wup/10-fold-dataset/fold-{}.train.pickle".format(fold)
@@ -138,11 +124,6 @@ else:
 tf.logging.info("train path:\t {}".format(config['data']['train_path']))
 tf.logging.info("model name:\t {}".format(config['model']['name']))
 
-if not args.train_wq:
-    config['data']['dev_path'] = "/home/user_data/wup/10-fold-dataset/fold-{}.vaild.pickle".format(fold)
-    config['data']['test_path'] = "/home/user_data/wup/10-fold-dataset/fold-{}.test.pickle".format(fold)
-    config['data']['seen_word_path'] = "/home/user_data/wup/10-fold-dataset/fold-{}.seen_word.test.pickle".format(fold)
-    config['data']['unseen_word_path'] = "/home/user_data/wup/10-fold-dataset/fold-{}.unseen_word.test.pickle".format(fold)
 
 kbqa_flag=False
 
@@ -153,19 +134,6 @@ if run=="test_kbqa":
     config['data']['test_path'] = config['data']['test_path']+".cand"
 
 
-baseline_path = {}
-pretrain_path = "/home/user_data/wup/10-fold-baseline"
-baseline_path[0] = os.path.join(pretrain_path,"paper.baseline-0/model.ckpt-14950")
-baseline_path[1] = os.path.join(pretrain_path,"paper.baseline-1/model.ckpt-10030")
-baseline_path[2] = os.path.join(pretrain_path,"paper.baseline-2/model.ckpt-17043")
-baseline_path[3] = os.path.join(pretrain_path,"paper.baseline-3/model.ckpt-6090")
-
-baseline_path[4] = os.path.join(pretrain_path,"paper.baseline-4/model.ckpt-14800")
-baseline_path[5] = os.path.join(pretrain_path,"paper.baseline-5/model.ckpt-6622")
-baseline_path[6] = os.path.join(pretrain_path,"paper.baseline-6/model.ckpt-9207")
-baseline_path[7] = os.path.join(pretrain_path,"paper.baseline-7/model.ckpt-11248")
-baseline_path[8] = os.path.join(pretrain_path,"paper.baseline-8/model.ckpt-12980")
-baseline_path[9] = os.path.join(pretrain_path,"paper.baseline-9/model.ckpt-6556")
 
 model_path = os.path.join(default_model_dir,config['model']['name'])
 log_path = os.path.join(default_log_dir,config['model']['name'])
@@ -184,19 +152,11 @@ if 'all' in config['model']['name']:
         tf.logging.info("run:\t {}".format("star_model"))
         curr_baseline_path = os.path.join(default_model_dir, "paper.baseline.alpha.gan-{}".format(fold))
         restore_file = tf.train.latest_checkpoint(curr_baseline_path)
-    elif args.train_new_wq:
-        tf.logging.info("run:\t {}".format("train new wq"))
-        curr_baseline_path = os.path.join(default_model_dir, "new.webq.baseline")
-        restore_file = tf.train.latest_checkpoint(curr_baseline_path)
-    elif (args.train_wq and not args.train_new_wq):
-        tf.logging.info("run:\t {}".format("train wq"))
-        curr_baseline_path = os.path.join(default_model_dir, "webq.baseline")
-        restore_file = tf.train.latest_checkpoint(curr_baseline_path)
     else:
         tf.logging.info("run:\t {}".format("adapter"))
         curr_baseline_path = os.path.join(default_model_dir, "paper.baseline-{}".format(key_num))
         restore_file = tf.train.latest_checkpoint(curr_baseline_path)
-        # restore_file = baseline_path[fold]
+
     config['run_op']['restore_file'] = restore_file
 
 
@@ -204,22 +164,6 @@ if run=="train":
     FileUtil.write_config(config,"{}/config".format(model_path))
 
 config['fold'] = fold
-
-if args.test_raw_model:
-    model_path = os.path.join("/home/user_data55/wup/acl_submit/model/", config['model']['name'])
-    tf.logging.info("now model.model_path {}".format(model_path))
-
-if args.test_wq!=None:
-    config['data']['test_path'] = args.test_wq
-    config['test_wq'] = True
-    tf.logging.info("now test path is {}".format(args.test_wq))
-else:
-    config['test_wq'] = False
-
-if args.train_wq:
-    config['train_wq'] = args.train_wq
-else:
-    config['train_wq'] = False
 
 
 create_and_train_model(config,tfconfig,fold)

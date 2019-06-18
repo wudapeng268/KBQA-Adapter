@@ -56,7 +56,7 @@ class SimpleQA:
         self.train_relation = set([t.relation for t in self.train_data])
         self.test_data = pkl.load(open(config['data']['test_path'], "rb"))
         self.max_candidate_relation = 0
-        if kbqa_flag or self.config['test_wq'] or self.config['train_wq']:
+        if kbqa_flag :
             tt=self.test_data
             tf.logging.info("kbqa flag: {}".format(kbqa_flag))
             for t in tt:
