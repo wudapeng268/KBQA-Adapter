@@ -1,0 +1,1 @@
+bash script/baseline.sh 0 0 9

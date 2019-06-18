@@ -1,0 +1,49 @@
+model:
+  name: "paper.baseline"
+  fine_tune_part_emb: True
+  target_method: "nre_rel"
+
+  relation_adapter_flag: False
+
+  negtivate_relation_sample: 256
+  batch_size: 256
+  dev_batch_size: 256
+  n_step: 40
+  relation_rep: "word+global"
+
+  train_word_embedding: True
+  gama_r: 0.1
+  n_hidden: 256
+  relation_embedding_size: 300
+
+run_op:
+  epoch: 1000
+  dev_epoch: 1
+  learning_rate: 0.001
+
+  adapter_lr: 0.0001
+  adapter_op: "RMSProp"
+  optimizer: "adam"
+  fix_random_seed: False
+  early_stop: True
+
+  all_train_stage: "seen"
+  all_dev_stage: "seen"
+  continue_train: False
+
+data:
+
+  rel_voc_path: "../Data/Embedding/rel.voc.pickle"
+
+  relation_word_id_path: "../Data/rel.word.id.npy"
+  relation_word_len_path: "../Data/rel.word.len.npy"
+
+  relation_part_id_path: "../Data/rel.rel.id.npy"
+  relation_part_len_path: "../Data/rel.rel.len.npy"
+
+  subject2relation_path: "../Data/subject2relation.pickle"
+  word_emb_path: "../Data/word.emb.nre.npy"
+  word_voc_path: "../Data/word.voc.pickle"
+
+  transX_embedding_path: "../Data/rel.emb.nre.txt"
+

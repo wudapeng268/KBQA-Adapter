@@ -1,0 +1,1 @@
+bash script/tl.sh 1 300 800
