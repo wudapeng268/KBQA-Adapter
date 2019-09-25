@@ -93,9 +93,7 @@ def dev(model, config, current_epoch):
 
     seen_relation_output = []
     unseen_relation_output = []
-    pred4seen_acc = 0
-    pred4seen_seen_acc = 0
-    pred4seen_unseen_acc = 0
+    
     model.qa.itemIndexDev = 0
 
     while (step - 1) * model.dev_batch_size < model.deving_iters:
@@ -109,8 +107,8 @@ def dev(model, config, current_epoch):
                 model.x_lens: value['batch_x_anonymous_lens'],
                 model.is_training: False, }
 
-        score_loss_test, predict_relation, rel_score, rel_pred4seen = model.sess.run(
-            [model.score_loss_test, model.rel_pred, model.rel_score, model.rel_pred4seen],
+        score_loss_test, predict_relation, rel_score = model.sess.run(
+            [model.score_loss_test, model.rel_pred, model.rel_score],
             feed_dict=feed)
 
         if write_log:
@@ -128,7 +126,6 @@ def dev(model, config, current_epoch):
                 continue
 
             ans_relation_id = value['cand_rel_list'][i][predict_relation[i]]
-            rel_pred4seen_id = value['cand_rel_list'][i][rel_pred4seen[i]]
 
             if i >= len(value['questions']):
                 continue
@@ -144,13 +141,6 @@ def dev(model, config, current_epoch):
                 else:
                     unseen_acc += 1
 
-            if temp_gold_relation == rel_pred4seen_id:
-                pred4seen_acc += 1
-                if temp_gold_relation in model.train_relation:
-                    pred4seen_seen_acc += 1
-                else:
-                    pred4seen_unseen_acc += 1
-
             qid += 1
         step += 1
 
@@ -159,20 +149,13 @@ def dev(model, config, current_epoch):
     if seen_num == 0:
         seen_acc = 0
     else:
-        pred4seen_seen_acc = pred4seen_seen_acc * 1. / seen_num
         seen_acc = seen_acc * 1.0 / seen_num
 
-    pred4seen_unseen_acc = pred4seen_unseen_acc * 1. / (qid - seen_num)
-    pred4seen_acc = pred4seen_acc * 1.0 / qid
     unseen_acc = unseen_acc * 1.0 / (qid - seen_num)
     seen_macro = cal_macro_acc(seen_relation_output)
     unseen_macro = cal_macro_acc(unseen_relation_output)
     all_macro = cal_macro_acc(seen_relation_output+unseen_relation_output)
-    if write_log:
-        model.writer.add_summary("dev/all_mapping_acc", pred4seen_acc, current_epoch)
-        model.writer.add_summary("dev/all_mapping_seen_acc", pred4seen_seen_acc, current_epoch)
-        model.writer.add_summary("dev/all_mapping_unseen_acc", pred4seen_unseen_acc, current_epoch)
-
+    
     return acc, seen_acc, unseen_acc, all_macro
 
 
@@ -198,12 +181,12 @@ def run_dev2(model, config, current_step, all_dev_stage, current_stage, all_dev_
         model.writer.add_summary("dev/acc", new_acc, current_step)
         model.writer.add_summary("dev/seen_acc", seen_acc, current_step)
         model.writer.add_summary("dev/unseen_acc", unseen_acc, current_step)
-        model.writer.add_summary("dev/true relation score", all_macro, current_step)
+        model.writer.add_summary("dev/all_macro_acc", all_macro, current_step)
 
     tf.logging.info("step:\t%d,new_acc_relation:\t%f" % (current_step, new_acc))
     tf.logging.info("step:\t%d,seen acc in dev:\t%f" % (current_step, seen_acc))
     tf.logging.info("step:\t%d,unseen acc in dev:\t%f" % (current_step, unseen_acc))
-    tf.logging.info("step:\t%d,true relaiton score in dev:\t%f" % (current_stage,all_macro))
+    tf.logging.info("step:\t%d,all macro acc in dev:\t%f" % (current_stage,all_macro))
 
     if all_dev_stage[current_stage] == "all":
         if new_acc > all_dev_struct.best_acc:
@@ -494,8 +477,8 @@ def test(model, config, final_test, write_file, kbqa_flag=False):
                 model.x_lens: value['batch_x_anonymous_lens'],
                 model.is_training: False, }
 
-        wo_cand_rel, score, rel_pred4seen, rel_word_vec, rel_part_vec = model.sess.run(
-            [model.rel_pred, model.rel_score, model.rel_pred4seen, model.word_test, model.part_test],
+        wo_cand_rel, score, rel_word_vec, rel_part_vec = model.sess.run(
+            [model.rel_pred, model.rel_score, model.word_test, model.part_test],
             feed_dict=feed)
 
         rel_word_vec = np.max(rel_word_vec, 1)
