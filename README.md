@@ -21,10 +21,16 @@ Our relation embeddings are trained by JointNRE between FB2M and wikipedia, plea
 <!-- ### Train relation detection model -->
 
 
-### Train Baseline and all model with adapter (including adapting JointNRE)
+### Train baseline and all model with adapter 
 ```
 cd qa+adapter
 bash script/run_baseline.sh
+```
+
+### Train baseline and our model using adapting JointNRE embedding
+```
+cd qa+adapter
+bash script/run_baseline-star.sh
 ```
 
 ### Train adapter with only mapping and adapter without fine-tuning

@@ -16,6 +16,5 @@ do
     python -u start.py --run train --config $config_file2 --fold $i  | tee $config_file2.$i.log
     python -u start.py --run train --config $config_file3 --fold $i  | tee $config_file3.$i.log
     python -u start.py --run train --config $config_file4 --fold $i  | tee $config_file4.$i.log
-    python -u start.py --run train --config config/gan-recon-all-star.yml --fold $i | tee gan.recon.all.star.yml.log
     echo "all done!"
 done
