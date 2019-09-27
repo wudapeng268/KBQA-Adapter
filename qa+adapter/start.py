@@ -150,7 +150,7 @@ if 'all' in config['model']['name']:
         restore_file = tf.train.latest_checkpoint(curr_baseline_path)
     elif args.star_model:
         tf.logging.info("run:\t {}".format("star_model"))
-        curr_baseline_path = os.path.join(default_model_dir, "paper.baseline.alpha.gan-{}".format(fold))
+        curr_baseline_path = os.path.join(default_model_dir, "paper.baseline.star-{}".format(fold))
         restore_file = tf.train.latest_checkpoint(curr_baseline_path)
     else:
         tf.logging.info("run:\t {}".format("adapter"))

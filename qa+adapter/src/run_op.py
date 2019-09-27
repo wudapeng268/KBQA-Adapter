@@ -513,13 +513,6 @@ def test(model, config, final_test, write_file, kbqa_flag=False):
                 unseen = True
                 unseen_relation_output.append(out_str)
 
-            if seen_word_flag and unseen and current_query in query4seen_word:
-                if pre == temp_gold_relation:
-                    seen_word_acc += 1
-            if seen_word_flag and unseen and current_query in query4unseen_word:
-                if pre == temp_gold_relation:
-                    unseen_word_acc += 1
-
             if temp_gold_relation in model.train_relation:
                 seen_macro_output.append("{}\t{}".format(temp_gold_relation, pre))
             else:
