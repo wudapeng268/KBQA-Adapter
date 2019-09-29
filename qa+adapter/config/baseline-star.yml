@@ -4,7 +4,8 @@ model:
   target_method: "nre_rel"
 
   relation_adapter_flag: False
-
+  adapter_dropout : 0.5
+  
   negtivate_relation_sample: 256
   batch_size: 256
   dev_batch_size: 256
