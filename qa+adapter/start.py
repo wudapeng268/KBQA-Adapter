@@ -121,6 +121,9 @@ else:
     config['model']['name'] = config['model']['name'] + "-{}".format(fold)
     config['data']['train_path'] = "/home/user_data/wup/10-fold-dataset/fold-{}.train.pickle".format(fold)
 
+config['data']['dev_path'] = "/home/user_data/wup/10-fold-dataset/fold-{}.vaild.pickle".format(fold)
+config['data']['test_path'] = "/home/user_data/wup/10-fold-dataset/fold-{}.test.pickle".format(fold)
+
 tf.logging.info("train path:\t {}".format(config['data']['train_path']))
 tf.logging.info("model name:\t {}".format(config['model']['name']))
 
