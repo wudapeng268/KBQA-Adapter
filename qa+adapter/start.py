@@ -17,7 +17,7 @@ if GPUCARD == None:
 
 
 
-from util import FileUtil
+from src.util import FileUtil
 import pickle as pkl
 import argparse
 parse = argparse.ArgumentParser()

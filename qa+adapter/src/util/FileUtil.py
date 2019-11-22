@@ -7,6 +7,8 @@
 # date:
 
 import yaml
+import io
+
 def readFile(filename):
     context = open(filename).readlines()
     return [c.strip() for c in context]
@@ -14,21 +16,21 @@ def readFile(filename):
 
 def writeFile(context, filename, append=False):
     if not append:
-        with open(filename, 'w+') as fout:
+        with io.open(filename, 'w+',encoding="utf-8") as fout:
             for co in context:
                 fout.write(co + "\n")
     else:
-        with open(filename, 'a+') as fout:
+        with io.open(filename, 'a+',encoding = "utf-8") as fout:
             for co in context:
                 fout.write(co + "\n")
 
 def load_from_config(path):
-    with open(path,"r") as f:
+    with io.open(path,"r",encoding="utf-8") as f:
         xx = yaml.load(f.read())
     return xx
 
 def write_config(config,path):
-    with open(path,"w") as f:
+    with io.open(path,"w",encoding="utf-8") as f:
         yaml.dump(config,f)
 
 
